@@ -43,7 +43,7 @@ jobs:
       - name: Build Project
         run: npm run build
         env:
-          PATH: ./node_modules/.bin/:$PATH
+          PATH: ./localhost
 
 
       # Dockerize project
