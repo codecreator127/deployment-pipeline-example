@@ -30,8 +30,8 @@ jobs:
       # Build the project
       - name: Build Project
         run: |
-        cd localhost
-        npm run build
+          cd localhost
+          npm run build
 
       # Dockerize project
       - name: Dockerize Build
