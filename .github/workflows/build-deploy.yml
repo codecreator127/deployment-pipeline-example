@@ -41,19 +41,18 @@ jobs:
 
       # Build the project
       - name: Build Project
-        run: npm run build
-        env:
-          PATH: ./localhost
-
+        run: |
+          cd localhost
+          npm run build
 
       # Dockerize project
       - name: Dockerize Build
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo Docker Build here
 
-  
-    # Add a deployment job that triggers deploy.yml upon completion
+
+
+  # Add a deployment job that triggers deploy.yml upon completion
   deploy:
     needs: build
     runs-on: ubuntu-latest
