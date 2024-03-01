@@ -37,7 +37,9 @@ jobs:
           node-version: '14'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd localhost
+          npm install
 
       # Build the project
       - name: Build Project
