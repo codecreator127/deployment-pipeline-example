@@ -3,12 +3,16 @@ name: Example CICD Pipeline
 # Controls when the workflow will run
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "github-actions" ]
   pull_request:
     branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+        deploy:
+          description: 'Deploy the project'
+          required: true
+          default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,12 +26,40 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Build the project
+      - name: Build Project
+        run: npm run build
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      # Dockerize project
+      - name: Dockerize Build
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+
+  
+    # Add a deployment job that triggers deploy.yml upon completion
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true'
+    steps:
+      - name: Trigger deploy workflow
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: workflowRuns } = await github.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_file: 'deploy.yml',
+              status: 'success',
+            });
+            if (workflowRuns.total_count === 0) {
+              await github.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_file: 'deploy.yml',
+                ref: 'main', // or any other branch you want to trigger deploy on
+                inputs: {} // You can pass inputs to your deploy workflow if needed
+              });
+            }
