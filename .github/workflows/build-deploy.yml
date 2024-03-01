@@ -9,6 +9,7 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+      inputs:
         deploy:
           description: 'Deploy the project'
           required: true
@@ -28,7 +29,9 @@ jobs:
 
       # Build the project
       - name: Build Project
-        run: npm run build
+        run: |
+        cd localhost
+        npm run build
 
       # Dockerize project
       - name: Dockerize Build
