@@ -50,8 +50,8 @@ jobs:
       # Dockerize project
       - name: Dockerize Build
         run: |
-          echo Docker Build here
-
+          docker build -f Dockerfile -t nextjs-app .
+          echo Docker Build ran
 
 
   # Add a deployment job that triggers deploy.yml upon completion
